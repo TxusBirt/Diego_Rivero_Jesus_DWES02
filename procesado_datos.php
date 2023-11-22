@@ -26,6 +26,14 @@ function valida_apellidos($apellidos)
         return false;
     }
 } 
+function valida_libro($libro) 
+{
+    if (isset($libro) and !empty($libro)) {
+        return true;
+    } else {
+        return false;
+    }
+} 
 // Funcion que valida que se declara la variable email al enviar el 
 // formulario y que tiene el formato correcto
 function validar_email($email) 
@@ -132,7 +140,9 @@ function valida_telefono($telefono) {
 }
 // función para decidir los datos que enviar a la interfaz gráfica y enviarla
 function salida_datos() {
-    if (valida_nombre($_GET['nombre']) and valida_apellidos($_GET['apellidos']) and validar_email($_GET['email']) and validar_dni($_GET['dni']) and validar_fecha($_GET['fecha']) and valida_telefono ($_GET['telefono'])) {
+    if (valida_nombre($_GET['nombre']) and valida_apellidos($_GET['apellidos']) and valida_libro($_GET['libro']) and 
+        validar_email($_GET['email']) and validar_dni($_GET['dni']) and validar_fecha($_GET['fecha']) and 
+        valida_telefono ($_GET['telefono'])) {
         /* 
           Compruebo si el libro esta disponible (sólo tengo en cuenta los libros 
           que se alquilan en una sesión para simular si el libro esta disponible ya
@@ -158,7 +168,7 @@ function salida_datos() {
             }
             // añado el libro con su fecha de alquiler al array
             array_push($_SESSION['libro'], [$_GET['libro'], $_GET['fecha']]);
-        } // si no es un array (o no existe), lo convertimos en array:
+        } // si no es un array (o no existe), lo convertimos en array de arrays que contengan libro y fecha
         else { 
             $_SESSION['libro'] = array([$_GET['libro'], $_GET['fecha']]);
         };
@@ -181,6 +191,9 @@ function salida_datos() {
             echo "<th class ='etiqueta'> DNI </th> <td>" . $_GET['dni'] . "</td>";
             echo "</tr>";
             echo "<tr>";
+            echo "<th class ='etiqueta'> Telefono </th> <td>" . $_GET['telefono'] . "</td>";
+            echo "</tr>";
+            echo "<tr>";
             echo "<th class ='etiqueta'> Fecha devolucion </th> <td>" . fecha_devolucion($_GET['fecha']) . "</td>";
             echo "</tr>";
             echo "<tr>";
@@ -188,32 +201,36 @@ function salida_datos() {
             echo "</tr>";
             echo "</table>";
         }
-        } else {
-            echo "<p style='font-size:2.5em; font-weight:bold; color:red;'>"; 
-            echo "Formulario incorrectamente rellenado. </p>";
-            echo "<p style='font-size:2em; font-weight:bold;'> Corrija los elementos siguientes del formulario: </p>";
-            if (validar_email($_GET['email']) == false) {
-                echo "<p> <span>Email</span> incorrectamente rellenado: asegurese de no haberlo dejado";
-                echo "en blanco y que el email sea correcto</p>";
-            } 
-            if (validar_dni($_GET['dni'])== false) {
-                echo "<p> <span>DNI</span> incorrectamente rellenado: asegurese de no haberlo dejado";
-                echo " en blanco y que el DNI sea correcto</br>";
-                echo " La letra correcta al numero de DNI dado es la: <span>". dniValido($_GET['dni']) . "</span></p>";
-            }
-            if (validar_fecha($_GET['fecha'])== false) {
-                echo "<p> <span> Fecha </span> incorrectamente rellenada: asegurese de no haber elegido";
-                echo " una fecha anterior al día de hoy</p>";
-            }
-            if (valida_nombre($_GET['nombre'])==false) {
-                echo "<p> No ha rellenado el <span>Nombre</span></p>";
-            }
-            if (valida_apellidos($_GET['apellidos'])==false) {
-                echo "<p> No ha rellenado los <span>Apellidos</span></p>";
-            }
-            if (valida_telefono($_GET['telefono'])==false) {
-                echo "<p> El <span>telefono</span> dado no es correcto</p>";
-            }
+    }   // Opciones que muestra el programa en caso de datos incorrectamente rellenados o que directamente 
+        // no se han rellenado
+    else {
+        echo "<p style='font-size:2.5em; font-weight:bold; color:red;'>"; 
+        echo "Formulario incorrectamente rellenado. </p>";
+        echo "<p style='font-size:2em; font-weight:bold;'> Corrija los elementos siguientes del formulario: </p>";
+        if (validar_email($_GET['email']) == false) {
+            echo "<p> <span>Email</span> incorrectamente rellenado: asegurese de no haberlo dejado";
+            echo " en blanco y que el email sea correcto</p>";
+        } 
+        if (validar_dni($_GET['dni'])== false) {
+            echo "<p> <span>DNI</span> incorrectamente rellenado: asegurese de no haberlo dejado";
+            echo " en blanco y que el DNI sea correcto</br>";
+            echo " La letra correcta al numero de DNI dado es la: <span>". dniValido($_GET['dni']) . "</span></p>";
         }
-
+        if (validar_fecha($_GET['fecha'])== false) {
+            echo "<p> <span> Fecha </span> incorrectamente rellenada: asegurese de no haber elegido";
+            echo " una fecha anterior al día de hoy</p>";
+        }
+        if (valida_nombre($_GET['nombre'])==false) {
+            echo "<p> No ha rellenado el <span>Nombre</span></p>";
+        }
+        if (valida_libro($_GET['libro'])==false) {
+            echo "<p> No ha rellenado el <span>libro</span> que desea</p>";
+        }
+        if (valida_apellidos($_GET['apellidos'])==false) {
+            echo "<p> No ha rellenado los <span>Apellidos</span></p>";
+        }
+        if (valida_telefono($_GET['telefono'])==false) {
+            echo "<p> El <span>telefono</span> dado no es correcto</p>";
+        }
+    }
 }
